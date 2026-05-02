@@ -6,10 +6,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "test": "jest --runInBand --coverage"
+    "test": "jest --verbose --runInBand",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@google-cloud/dialogflow": "^7.5.0",
@@ -42,7 +40,7 @@
     "@tootallnate/once": "^3.0.1",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.2",
-    "uuid": "^14.0.0"
+    "uuid": "^9.0.1"
   },
   "jest": {
     "testEnvironment": "node",

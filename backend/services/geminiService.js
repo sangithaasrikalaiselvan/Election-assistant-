@@ -99,12 +99,12 @@ const getGeminiStream = async (message, systemPrompt) => {
       });
       const result = await model.generateContentStream(prompt);
 
-      async function* legacyStream() {
+      const legacyStream = async function* () {
         for await (const chunk of result.stream) {
           const text = chunk?.text?.();
           if (text) yield text;
         }
-      }
+      };
 
       return legacyStream();
     }

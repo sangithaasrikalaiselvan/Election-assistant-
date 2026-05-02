@@ -37,6 +37,8 @@ app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "1mb" }));
 
+const distPath = path.join(__dirname, "dist");
+
 app.get("/health", (req, res) => {
   sendSuccess(
     res,
@@ -58,12 +60,29 @@ app.get("/info", (req, res) => {
   );
 });
 
+app.get("/debug-dist", (req, res) => {
+  const fs = require("fs");
+  const distPath = path.join(__dirname, "dist");
+  const assetsPath = path.join(distPath, "assets");
+
+  res.json({
+    "dist_exists": fs.existsSync(distPath),
+    "dist_files": fs.existsSync(distPath) ? fs.readdirSync(distPath) : "dist folder not found",
+    "assets_exists": fs.existsSync(assetsPath),
+    "assets_files": fs.existsSync(assetsPath) ? fs.readdirSync(assetsPath) : "assets folder not found",
+  });
+});
+
 app.use("/api", apiRoutes);
 
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(distPath));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  if (req.path.startsWith("/api")) {
+    return res.status(404).json({ error: "API route not found" });
+  }
+
+  res.sendFile(path.join(distPath, "index.html"));
 });
 
 app.use(notFound);
