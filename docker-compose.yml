@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file: .env
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      ALLOWED_ORIGINS: http://localhost:8081
+      CACHE_TTL_MS: 300000
+      GOOGLE_TRANSLATE_API_KEY: ${GOOGLE_TRANSLATE_API_KEY}
+      GOOGLE_TRANSLATE_ENDPOINT: https://translation.googleapis.com/language/translate/v2
+      DIALOGFLOW_PROJECT_ID: ${DIALOGFLOW_PROJECT_ID}
+      DIALOGFLOW_CLIENT_EMAIL: ${DIALOGFLOW_CLIENT_EMAIL}
+      DIALOGFLOW_PRIVATE_KEY: ${DIALOGFLOW_PRIVATE_KEY}
+      DIALOGFLOW_LANGUAGE_CODE: ${DIALOGFLOW_LANGUAGE_CODE}
+      DIALOGFLOW_SESSION_ID: ${DIALOGFLOW_SESSION_ID}
+      LOG_LEVEL: info
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    env_file: .env
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/ > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

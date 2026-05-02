@@ -1,0 +1,194 @@
+{
+  "guideSteps": [
+    {
+      "step": 1,
+      "id": "registration",
+      "title": "Voter Registration",
+      "icon": "ID",
+      "description": "Verify eligibility, gather required documents, and register through the official election authority or approved portals.",
+      "keywords": ["registration", "register", "eligibility"]
+    },
+    {
+      "step": 2,
+      "id": "nomination",
+      "title": "Nomination",
+      "icon": "NOM",
+      "description": "Candidates submit nomination forms, meet eligibility rules, and get approved for the ballot.",
+      "keywords": ["nomination", "candidates", "ballot"]
+    },
+    {
+      "step": 3,
+      "id": "campaigning",
+      "title": "Campaigning",
+      "icon": "CAMP",
+      "description": "Candidates present platforms, join debates, and engage with voters across media and public events.",
+      "keywords": ["campaign", "campaigning", "debate"]
+    },
+    {
+      "step": 4,
+      "id": "voting",
+      "title": "Voting Day",
+      "icon": "VOTE",
+      "description": "Voters cast ballots at assigned polling stations or through early or absentee options if available.",
+      "keywords": ["voting", "polling", "ballot"]
+    },
+    {
+      "step": 5,
+      "id": "counting",
+      "title": "Vote Counting",
+      "icon": "COUNT",
+      "description": "Officials secure ballots, tally votes, and run audits to validate the count.",
+      "keywords": ["counting", "count", "audit"]
+    },
+    {
+      "step": 6,
+      "id": "results",
+      "title": "Results",
+      "icon": "RESULT",
+      "description": "Certified results are published and the winning candidates are declared.",
+      "keywords": ["results", "certification", "declare"]
+    }
+  ],
+  "timeline": [
+    {
+      "id": "phase-1",
+      "phase": "Voter Registration",
+      "description": "Registration, verification, and updates to the voter roll.",
+      "startDate": "2026-01-05",
+      "endDate": "2026-02-05",
+      "status": "completed"
+    },
+    {
+      "id": "phase-2",
+      "phase": "Nomination",
+      "description": "Submission and review of candidate nominations.",
+      "startDate": "2026-02-10",
+      "endDate": "2026-02-24",
+      "status": "completed"
+    },
+    {
+      "id": "phase-3",
+      "phase": "Campaigning",
+      "description": "Campaign events, debates, and voter outreach.",
+      "startDate": "2026-03-01",
+      "endDate": "2026-04-15",
+      "status": "active"
+    },
+    {
+      "id": "phase-4",
+      "phase": "Voting Day",
+      "description": "In-person and approved remote voting windows.",
+      "startDate": "2026-04-20",
+      "endDate": "2026-04-21",
+      "status": "upcoming"
+    },
+    {
+      "id": "phase-5",
+      "phase": "Vote Counting",
+      "description": "Tabulation, audits, and verification checks.",
+      "startDate": "2026-04-22",
+      "endDate": "2026-04-29",
+      "status": "upcoming"
+    },
+    {
+      "id": "phase-6",
+      "phase": "Results",
+      "description": "Final certification and public announcement.",
+      "startDate": "2026-04-30",
+      "endDate": "2026-05-02",
+      "status": "upcoming"
+    }
+  ],
+  "faq": [
+    {
+      "id": "faq-1",
+      "question": "How do I register to vote?",
+      "answer": "Check eligibility rules, prepare identity documents, and register through the official election portal or local office.",
+      "keywords": ["register", "registration", "eligibility"]
+    },
+    {
+      "id": "faq-2",
+      "question": "What documents are needed for registration?",
+      "answer": "Most regions require proof of identity and address, such as a government-issued ID and residency document.",
+      "keywords": ["documents", "id", "proof"]
+    },
+    {
+      "id": "faq-3",
+      "question": "When is the registration deadline?",
+      "answer": "Deadlines vary by jurisdiction. Check the official election authority for the exact cutoff date.",
+      "keywords": ["deadline", "registration", "date"]
+    },
+    {
+      "id": "faq-4",
+      "question": "How are candidates nominated?",
+      "answer": "Candidates submit nomination forms and meet eligibility requirements before being listed on the ballot.",
+      "keywords": ["nomination", "candidate", "ballot"]
+    },
+    {
+      "id": "faq-5",
+      "question": "Where can I find candidate information?",
+      "answer": "Look for official candidate lists, verified debates, and policy summaries on trusted election resources.",
+      "keywords": ["candidate", "platform", "policy"]
+    },
+    {
+      "id": "faq-6",
+      "question": "What should I bring on voting day?",
+      "answer": "Bring approved identification and your voter confirmation if required by your jurisdiction.",
+      "keywords": ["bring", "voting", "id"]
+    },
+    {
+      "id": "faq-7",
+      "question": "Can I vote early or by mail?",
+      "answer": "Many regions offer early voting or absentee ballots. Check the official schedule for dates and eligibility.",
+      "keywords": ["early", "mail", "absentee"]
+    },
+    {
+      "id": "faq-8",
+      "question": "How are votes counted?",
+      "answer": "Election officials secure ballots, tally votes, and run audits to confirm accuracy.",
+      "keywords": ["count", "counting", "audit"]
+    },
+    {
+      "id": "faq-9",
+      "question": "When are results announced?",
+      "answer": "Preliminary results are released after polls close, with final certification after verification.",
+      "keywords": ["results", "announce", "certification"]
+    },
+    {
+      "id": "faq-10",
+      "question": "Can results be appealed or challenged?",
+      "answer": "Yes. Most systems have formal procedures for recounts or legal challenges within defined timelines.",
+      "keywords": ["appeal", "challenge", "recount"]
+    },
+    {
+      "id": "faq-11",
+      "question": "How do I find my polling station?",
+      "answer": "Use the official polling station lookup tool provided by the election authority.",
+      "keywords": ["polling station", "location", "where"]
+    },
+    {
+      "id": "faq-12",
+      "question": "What if my name is missing from the voter list?",
+      "answer": "Contact the election office immediately to resolve registration issues or request a correction.",
+      "keywords": ["missing", "voter list", "correction"]
+    },
+    {
+      "id": "faq-13",
+      "question": "Are there accessibility services at polling locations?",
+      "answer": "Most polling stations provide ramps, assistance, and accessible voting equipment upon request.",
+      "keywords": ["accessibility", "assistance", "disability"]
+    },
+    {
+      "id": "faq-14",
+      "question": "How is voter privacy protected?",
+      "answer": "Ballots are anonymous and handled with secure procedures to protect voter confidentiality.",
+      "keywords": ["privacy", "anonymous", "secure"]
+    },
+    {
+      "id": "faq-15",
+      "question": "Where can I get official election updates?",
+      "answer": "Follow official election commission announcements and verified public notices.",
+      "keywords": ["official", "updates", "commission"]
+    }
+  ]
+}
