@@ -76,6 +76,8 @@ Backend:
 - `DIALOGFLOW_PRIVATE_KEY`
 - `DIALOGFLOW_LANGUAGE_CODE`
 - `DIALOGFLOW_SESSION_ID`
+- `GEMINI_API_KEY`
+- `GEMINI_MODEL`
 - `LOG_LEVEL`
 
 Frontend:
@@ -83,6 +85,16 @@ Frontend:
 - `VITE_API_URL`
 
 ## Google Services Setup
+
+### Gemini API
+
+1. Create an API key in Google AI Studio.
+2. Set environment variables:
+
+```
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_MODEL=gemini-1.5-flash
+```
 
 ### Dialogflow ES
 

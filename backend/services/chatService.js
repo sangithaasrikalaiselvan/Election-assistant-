@@ -1,6 +1,6 @@
 const { detectIntent } = require("../utils/intent");
 const { detectDialogflowIntent } = require("./dialogflowService");
-const { getOpenRouterResponse, getOpenRouterStream } = require("./openrouterService");
+const { getGeminiResponse, getGeminiStream } = require("./geminiService");
 const { translateText } = require("./translateService");
 const SimpleCache = require("../utils/cache");
 const { CACHE_TTL_MS } = require("../config");
@@ -271,12 +271,12 @@ const buildResponse = async (message, language) => {
   }
 
   if (intent === "general") {
-    const llmAnswer = await getOpenRouterResponse(message, SYSTEM_PROMPT);
+    const llmAnswer = await getGeminiResponse(message, SYSTEM_PROMPT);
     if (llmAnswer) {
       return {
-        intent: "openrouter",
+        intent: "gemini",
         answer: llmAnswer,
-        sources: ["openrouter"],
+        sources: ["gemini"],
       };
     }
   }
@@ -303,11 +303,11 @@ const buildResponse = async (message, language) => {
 const getChatResponseStream = async (message, language) => {
   const intent = await resolveIntent(message, language);
   if (intent === "general") {
-    const stream = await getOpenRouterStream(message, SYSTEM_PROMPT);
+    const stream = await getGeminiStream(message, SYSTEM_PROMPT);
     if (stream) {
       return {
-        intent: "openrouter",
-        sources: ["openrouter"],
+        intent: "gemini",
+        sources: ["gemini"],
         stream,
       };
     }
@@ -339,7 +339,7 @@ const getChatResponse = async (message, language) => {
   }
 
   const response = await buildResponse(message, language);
-  if (response.intent !== "openrouter") {
+  if (response.intent !== "gemini") {
     responseCache.set(cacheKey, response);
   }
   return response;

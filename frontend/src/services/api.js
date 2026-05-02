@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://election-backend-898515869127.asia-south1.run.app";
 
 const responseCache = new Map();
 

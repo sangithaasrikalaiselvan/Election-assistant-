@@ -1,6 +1,8 @@
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const path = require("path");
+
 const apiRoutes = require("./routes");
 const { PORT, ALLOWED_ORIGINS } = require("./config");
 const { notFound, errorHandler } = require("./utils/error");
@@ -30,11 +32,19 @@ const corsOptions = {
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "1mb" }));
+
 app.get("/health", (req, res) => {
   sendSuccess(res, { status: "ok" }, "Health check ok");
 });
 
 app.use("/api", apiRoutes);
+
+app.use(express.static(path.join(__dirname, "dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
 app.use(notFound);
 app.use(errorHandler);
 

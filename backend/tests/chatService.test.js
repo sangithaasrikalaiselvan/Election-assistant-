@@ -1,6 +1,6 @@
-jest.mock("../services/openrouterService", () => ({
-  getOpenRouterResponse: jest.fn(async () => null),
-  getOpenRouterStream: jest.fn(async () => null),
+jest.mock("../services/geminiService", () => ({
+  getGeminiResponse: jest.fn(async () => null),
+  getGeminiStream: jest.fn(async () => null),
 }));
 
 jest.mock("../services/translateService", () => ({
@@ -19,10 +19,7 @@ const {
   getTranslatedChatResponse,
   getTranslatedChatStream,
 } = require("../services/chatService");
-const {
-  getOpenRouterResponse,
-  getOpenRouterStream,
-} = require("../services/openrouterService");
+const { getGeminiResponse, getGeminiStream } = require("../services/geminiService");
 const { detectDialogflowIntent } = require("../services/dialogflowService");
 const { translateText } = require("../services/translateService");
 
@@ -84,35 +81,35 @@ describe("chatService", () => {
     expect(response.intent).toBe("greeting");
   });
 
-  it("returns openrouter response for general intent when available", async () => {
-    getOpenRouterResponse.mockResolvedValueOnce("LLM response");
+  it("returns gemini response for general intent when available", async () => {
+    getGeminiResponse.mockResolvedValueOnce("LLM response");
     const response = await getChatResponse("Tell me something new", "en");
-    expect(response.intent).toBe("openrouter");
+    expect(response.intent).toBe("gemini");
     expect(response.answer).toBe("LLM response");
   });
 
-  it("returns general fallback when openrouter is unavailable", async () => {
-    getOpenRouterResponse.mockResolvedValueOnce(null);
+  it("returns general fallback when gemini is unavailable", async () => {
+    getGeminiResponse.mockResolvedValueOnce(null);
     const response = await getChatResponse("Tell me something new", "en");
     expect(response.intent).toBe("general");
   });
 
-  it("returns openrouter stream when available", async () => {
+  it("returns gemini stream when available", async () => {
     async function* stream() {
       yield "hello";
       yield "world";
     }
 
-    getOpenRouterStream.mockResolvedValueOnce(stream());
+    getGeminiStream.mockResolvedValueOnce(stream());
     const response = await getChatResponseStream("Tell me something new", "en");
     const chunks = await collectStream(response.stream);
 
-    expect(response.intent).toBe("openrouter");
+    expect(response.intent).toBe("gemini");
     expect(chunks).toEqual(["hello", "world"]);
   });
 
-  it("returns fallback stream when openrouter is unavailable", async () => {
-    getOpenRouterStream.mockResolvedValueOnce(null);
+  it("returns fallback stream when gemini is unavailable", async () => {
+    getGeminiStream.mockResolvedValueOnce(null);
     const response = await getChatResponseStream("hello", "en");
     const chunks = await collectStream(response.stream);
     expect(response.intent).toBe("greeting");
