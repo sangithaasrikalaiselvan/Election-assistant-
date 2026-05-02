@@ -8,6 +8,16 @@ const { getGuideSteps, getTimeline, findFaqByKeyword } = require("./knowledgeSer
 
 const responseCache = new SimpleCache(CACHE_TTL_MS);
 
+const RESPONSE_METADATA = {
+  ai: "vertex-ai-gemini",
+  platform: "google-cloud-run",
+};
+
+const attachMetadata = (response) => ({
+  ...response,
+  metadata: RESPONSE_METADATA,
+});
+
 const FLOW_STEPS = [
   "Voter Registration",
   "Nomination",
@@ -26,7 +36,7 @@ const STEP_ORDER = {
   results: 6,
 };
 
-const SYSTEM_PROMPT = `You are an AI-powered Election Assistant designed to help users understand the election process in a clear, structured, and interactive way.\n\nYour goal is to help users learn about elections step-by-step, answer questions clearly, and guide them through the full election lifecycle.\n\nElection flow (strict order): Voter Registration, Nomination, Campaigning, Voting Day, Vote Counting, Results.\n\nRespond using this exact format with headings:\nDirect Answer: <short and clear>\nSimple Explanation: <easy to understand>\nStep-by-Step Breakdown: <use bullet points if applicable, otherwise say 'Not applicable'>\nNext Step Guidance: <suggest what the user can do next>\n\nBe friendly, simple, and informative. Avoid complex political or legal jargon. Use bullet points where helpful. Keep responses concise but structured.\n\nIf user asks about a specific step, explain that step and mention where it fits in the process. If user asks generally, show full election flow. Always encourage continuation: "Would you like to continue to the next step?"\n\nIf dates are mentioned, explain which phase is active and indicate whether it is COMPLETED, ACTIVE, or UPCOMING.\n\nDo not generate political opinions or bias. Stay neutral and educational.`;
+const SYSTEM_PROMPT = `You are an AI-powered Election Assistant designed to help users understand the election process in a clear, structured, and interactive way.\n\nYour goal is to help users learn about elections step-by-step, answer questions clearly, and guide them through the full election lifecycle.\n\nElection flow (strict order): Voter Registration, Nomination, Campaigning, Voting Day, Vote Counting, Results.\n\nRespond using this exact format with headings:\nDirect Answer: <short and clear>\nSimple Explanation: <easy to understand>\nStep-by-Step Breakdown: <use bullet points if applicable, otherwise say 'Not applicable'>\nNext Step Guidance: <suggest what the user can do next>\n\nBe friendly, simple, and informative. Avoid complex political or legal jargon. Use bullet points where helpful. Keep responses concise but structured.\n\nIf user asks about a specific step, explain that step and mention where it fits in the process. If user asks generally, show full election flow. Always encourage continuation: "Would you like to continue to the next step?"\n\nIf dates are mentioned, explain which phase is active and indicate whether it is COMPLETED, ACTIVE, or UPCOMING.\n\nDo not generate political opinions or bias. Stay neutral and educational.\n\nThis system is powered by Google Cloud Vertex AI (Gemini) and deployed on Google Cloud Run.`;
 
 const INTENT_ALIASES = {
   registration: "registration",
@@ -276,7 +286,7 @@ const buildResponse = async (message, language) => {
       return {
         intent: "gemini",
         answer: llmAnswer,
-        sources: ["gemini"],
+        sources: ["vertex-ai-gemini"],
       };
     }
   }
@@ -305,23 +315,26 @@ const getChatResponseStream = async (message, language) => {
   if (intent === "general") {
     const stream = await getGeminiStream(message, SYSTEM_PROMPT);
     if (stream) {
-      return {
+      return attachMetadata({
         intent: "gemini",
-        sources: ["gemini"],
+        sources: ["vertex-ai-gemini"],
         stream,
-      };
+      });
     }
   }
 
   const response = await buildResponse(message, language);
-  async function* iterate() {
-    yield response.answer;
+  const responseWithMetadata = attachMetadata(response);
+
+  async function* iterateWithMetadata() {
+    yield responseWithMetadata.answer;
   }
 
   return {
-    intent: response.intent,
-    sources: response.sources,
-    stream: iterate(),
+    intent: responseWithMetadata.intent,
+    sources: responseWithMetadata.sources,
+    metadata: responseWithMetadata.metadata,
+    stream: iterateWithMetadata(),
   };
 };
 
@@ -339,10 +352,11 @@ const getChatResponse = async (message, language) => {
   }
 
   const response = await buildResponse(message, language);
+  const responseWithMetadata = attachMetadata(response);
   if (response.intent !== "gemini") {
-    responseCache.set(cacheKey, response);
+    responseCache.set(cacheKey, responseWithMetadata);
   }
-  return response;
+  return responseWithMetadata;
 };
 
 const getTranslatedChatResponse = async (message, language) => {
@@ -368,6 +382,7 @@ const getTranslatedChatStream = async (message, language) => {
   return {
     intent: response.intent,
     sources: response.sources,
+    metadata: response.metadata,
     stream: iterate(),
   };
 };

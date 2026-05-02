@@ -1,22 +1,18 @@
-const { createLogger, format, transports } = require("winston");
+const winston = require("winston");
 
-const isTest = process.env.NODE_ENV === "test";
+const isTest = process.env.NODE_ENV === "test" || Boolean(process.env.JEST_WORKER_ID);
 
-const logger = createLogger({
-  level: process.env.LOG_LEVEL || "info",
-  format: format.combine(format.timestamp(), format.json()),
-  transports: isTest
-    ? [
-        new transports.Console({
-          silent: true,
-          format: format.combine(format.colorize(), format.simple()),
-        }),
-      ]
-    : [
-        new transports.Console({
-          format: format.combine(format.colorize(), format.simple()),
-        }),
-      ],
+const transports = [new winston.transports.Console()];
+
+if (!isTest) {
+  const { LoggingWinston } = require("@google-cloud/logging-winston");
+  transports.push(new LoggingWinston());
+}
+
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+  transports,
 });
 
 module.exports = logger;

@@ -13,6 +13,11 @@
   },
   "dependencies": {
     "@google-cloud/dialogflow": "^7.5.0",
+    "@google-cloud/logging-winston": "^6.0.1",
+    "@google-cloud/monitoring": "^5.3.2",
+    "@google-cloud/secret-manager": "^6.1.2",
+    "@google-cloud/trace-agent": "^8.0.0",
+    "@google-cloud/vertexai": "^1.12.0",
     "@google/generative-ai": "^0.21.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -32,6 +37,12 @@
     "nodemon": "^3.1.4",
     "prettier": "^3.8.3",
     "supertest": "^7.0.0"
+  },
+  "overrides": {
+    "@tootallnate/once": "^3.0.1",
+    "http-proxy-agent": "^7.0.2",
+    "https-proxy-agent": "^7.0.2",
+    "uuid": "^14.0.0"
   },
   "jest": {
     "testEnvironment": "node",

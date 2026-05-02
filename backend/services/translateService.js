@@ -1,9 +1,5 @@
 const SimpleCache = require("../utils/cache");
-const {
-  CACHE_TTL_MS,
-  GOOGLE_TRANSLATE_API_KEY,
-  GOOGLE_TRANSLATE_ENDPOINT,
-} = require("../config");
+const { CACHE_TTL_MS, GOOGLE_TRANSLATE_ENDPOINT } = require("../config");
 const logger = require("../utils/logger");
 
 const translateCache = new SimpleCache(CACHE_TTL_MS);
@@ -20,13 +16,18 @@ const translateText = async (text, targetLanguage) => {
     return text;
   }
 
-  const cacheKey = `${normalizedLang}:${text}`;
+  const hasApiKey = Object.prototype.hasOwnProperty.call(
+    process.env,
+    "GOOGLE_TRANSLATE_API_KEY"
+  );
+  const apiKey = hasApiKey ? process.env.GOOGLE_TRANSLATE_API_KEY || "" : "";
+  const cacheKey = `${apiKey || "no-key"}:${normalizedLang}:${text}`;
   const cached = translateCache.get(cacheKey);
   if (cached) {
     return cached;
   }
 
-  if (!GOOGLE_TRANSLATE_API_KEY) {
+  if (!apiKey) {
     const fallback = `[${normalizedLang}] ${text}`;
     translateCache.set(cacheKey, fallback);
     return fallback;
@@ -34,7 +35,7 @@ const translateText = async (text, targetLanguage) => {
 
   try {
     const response = await fetch(
-      `${GOOGLE_TRANSLATE_ENDPOINT}?key=${GOOGLE_TRANSLATE_API_KEY}`,
+      `${GOOGLE_TRANSLATE_ENDPOINT}?key=${apiKey}`,
       {
         method: "POST",
         headers: {

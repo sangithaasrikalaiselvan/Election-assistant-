@@ -3,6 +3,7 @@ const {
   getTranslatedChatResponse,
   getTranslatedChatStream,
 } = require("../services/chatService");
+const { recordLatency, recordError } = require("../utils/metrics");
 const { sanitizeInput } = require("../utils/sanitize");
 const { sendError, sendSuccess } = require("../utils/response");
 
@@ -13,6 +14,7 @@ const chatStreamController = async (req, res, next) => {
     return sendError(res, 400, "Validation failed", { errors: errors.array() });
   }
 
+  const start = Date.now();
   try {
     const message = sanitizeInput(req.body.message);
     if (!message) {
@@ -32,7 +34,11 @@ const chatStreamController = async (req, res, next) => {
 
     res.write(`data: ${JSON.stringify({ type: "done", intent, sources, language })}\n\n`);
     res.end();
+
+    const duration = Date.now() - start;
+    recordLatency(duration);
   } catch (error) {
+    recordError();
     if (!res.headersSent) {
       res.setHeader("Content-Type", "application/json");
       return res.status(500).json({
@@ -49,6 +55,7 @@ const chatController = async (req, res, next) => {
     return sendError(res, 400, "Validation failed", { errors: errors.array() });
   }
 
+  const start = Date.now();
   try {
     const message = sanitizeInput(req.body.message);
     if (!message) {
@@ -57,7 +64,11 @@ const chatController = async (req, res, next) => {
     const language = sanitizeInput(req.body.language || "en").toLowerCase();
     const response = await getTranslatedChatResponse(message, language);
     sendSuccess(res, response, "Chat response generated");
+
+    const duration = Date.now() - start;
+    recordLatency(duration);
   } catch (error) {
+    recordError();
     next(error);
   }
 };
