@@ -1,12 +1,18 @@
-const { getGuideSteps } = require("../services/knowledgeService");
-const { sendSuccess } = require("../utils/response");
+/**
+ * @fileoverview Controllers for guide endpoints
+ */
 
-const guideController = (req, res, next) => {
-  try {
-    sendSuccess(res, { steps: getGuideSteps() }, "Fetched guide steps successfully");
-  } catch (error) {
-    next(error);
-  }
-};
+const { getGuideSteps } = require("../services/knowledgeService");
+const { success } = require("../utils/response");
+const asyncHandler = require("../utils/asyncHandler");
+
+/**
+ * Controller to fetch all guide steps.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const guideController = asyncHandler(async (req, res) => {
+  success(res, { steps: getGuideSteps() }, "Fetched guide steps successfully");
+});
 
 module.exports = { guideController };

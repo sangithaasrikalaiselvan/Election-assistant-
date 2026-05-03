@@ -1,12 +1,26 @@
+/**
+ * @fileoverview Service for integrating with Google Cloud Vertex AI Gemini
+ */
+
 const logger = require("../utils/logger");
 const { GEMINI_MODEL: DEFAULT_GEMINI_MODEL } = require("../config");
 
+/**
+ * Gets Gemini client configuration based on environment variables.
+ * @returns {{project: string, location: string, model: string}}
+ */
 const getConfig = () => ({
   project: process.env.GCP_PROJECT_ID,
   location: process.env.GCP_LOCATION || "asia-south1",
   model: process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL || "gemini-1.5-flash",
 });
 
+/**
+ * Builds a prompt array combining system instructions and user message.
+ * @param {string} message
+ * @param {string} [systemPrompt]
+ * @returns {string}
+ */
 const buildPrompt = (message, systemPrompt) => {
   if (!systemPrompt) return message;
   return `${systemPrompt}\n\nUser: ${message}`;

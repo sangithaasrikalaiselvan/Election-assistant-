@@ -11,6 +11,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@babel/preset-env": "^7.29.3",
+    "@babel/preset-react": "^7.28.5",
+    "babel-jest": "^30.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -20,6 +23,7 @@
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.5.2",
     "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/coverage-v8": "^4.1.5",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jsx-a11y": "^6.9.0",

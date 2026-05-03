@@ -1,9 +1,17 @@
+/**
+ * @fileoverview Utility for recording custom metrics to Google Cloud Monitoring
+ */
+
 const { MetricServiceClient } = require("@google-cloud/monitoring");
 
 let client;
 const isTestEnv = () =>
   process.env.NODE_ENV === "test" || Boolean(process.env.JEST_WORKER_ID);
 
+/**
+ * Gets the GCP project path for monitoring.
+ * @returns {string|null} The project path, or null if missing/testing
+ */
 const getProjectName = () => {
   if (isTestEnv()) {
     return null;
@@ -22,7 +30,11 @@ const getProjectName = () => {
 const LATENCY_METRIC = "custom.googleapis.com/api_latency";
 const ERROR_METRIC = "custom.googleapis.com/api_errors";
 
-// Record latency (in milliseconds).
+/**
+ * Record latency (in milliseconds).
+ * @param {number} ms - The latency in milliseconds
+ * @returns {Promise<void>}
+ */
 async function recordLatency(ms) {
   const projectName = getProjectName();
   if (!projectName) {
@@ -52,7 +64,10 @@ async function recordLatency(ms) {
   await client.createTimeSeries(request);
 }
 
-// Record error count.
+/**
+ * Record error count.
+ * @returns {Promise<void>}
+ */
 async function recordError() {
   const projectName = getProjectName();
   if (!projectName) {

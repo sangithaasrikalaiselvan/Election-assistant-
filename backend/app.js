@@ -9,8 +9,8 @@ const path = require("path");
 
 const apiRoutes = require("./routes");
 const { PORT, ALLOWED_ORIGINS } = require("./config");
-const { notFound, errorHandler } = require("./utils/error");
-const { sendSuccess } = require("./utils/response");
+const { notFound, errorHandler } = require("./middlewares/errorHandler");
+const { success } = require("./utils/response");
 const logger = require("./utils/logger");
 
 const app = express();
@@ -40,7 +40,7 @@ app.use(express.json({ limit: "1mb" }));
 const distPath = path.join(__dirname, "dist");
 
 app.get("/health", (req, res) => {
-  sendSuccess(
+  success(
     res,
     { status: "ok", service: "Cloud Run", ai: "Vertex AI (Gemini)" },
     "Health check ok"
@@ -48,7 +48,7 @@ app.get("/health", (req, res) => {
 });
 
 app.get("/info", (req, res) => {
-  sendSuccess(
+  success(
     res,
     {
       project: "Election Assistant",
@@ -66,10 +66,14 @@ app.get("/debug-dist", (req, res) => {
   const assetsPath = path.join(distPath, "assets");
 
   res.json({
-    "dist_exists": fs.existsSync(distPath),
-    "dist_files": fs.existsSync(distPath) ? fs.readdirSync(distPath) : "dist folder not found",
-    "assets_exists": fs.existsSync(assetsPath),
-    "assets_files": fs.existsSync(assetsPath) ? fs.readdirSync(assetsPath) : "assets folder not found",
+    dist_exists: fs.existsSync(distPath),
+    dist_files: fs.existsSync(distPath)
+      ? fs.readdirSync(distPath)
+      : "dist folder not found",
+    assets_exists: fs.existsSync(assetsPath),
+    assets_files: fs.existsSync(assetsPath)
+      ? fs.readdirSync(assetsPath)
+      : "assets folder not found",
   });
 });
 

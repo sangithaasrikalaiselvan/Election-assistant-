@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Service for handling chat logic and intent resolution
+ */
+
 const { detectIntent } = require("../utils/intent");
 const { detectDialogflowIntent } = require("./dialogflowService");
 const { getGeminiResponse, getGeminiStream } = require("./geminiService");
@@ -5,53 +9,25 @@ const { translateText } = require("./translateService");
 const SimpleCache = require("../utils/cache");
 const { CACHE_TTL_MS } = require("../config");
 const { getGuideSteps, getTimeline, findFaqByKeyword } = require("./knowledgeService");
+const {
+  FLOW_STEPS,
+  STEP_ORDER,
+  RESPONSE_METADATA,
+  INTENT_ALIASES,
+  SYSTEM_PROMPT,
+} = require("../utils/constants");
 
 const responseCache = new SimpleCache(CACHE_TTL_MS);
 
-const RESPONSE_METADATA = {
-  ai: "vertex-ai-gemini",
-  platform: "google-cloud-run",
-};
-
+/**
+ * Attaches standard metadata to the response object.
+ * @param {object} response
+ * @returns {object}
+ */
 const attachMetadata = (response) => ({
   ...response,
   metadata: RESPONSE_METADATA,
 });
-
-const FLOW_STEPS = [
-  "Voter Registration",
-  "Nomination",
-  "Campaigning",
-  "Voting Day",
-  "Vote Counting",
-  "Results",
-];
-
-const STEP_ORDER = {
-  registration: 1,
-  nomination: 2,
-  campaigning: 3,
-  voting: 4,
-  counting: 5,
-  results: 6,
-};
-
-const SYSTEM_PROMPT = `You are an AI-powered Election Assistant designed to help users understand the election process in a clear, structured, and interactive way.\n\nYour goal is to help users learn about elections step-by-step, answer questions clearly, and guide them through the full election lifecycle.\n\nElection flow (strict order): Voter Registration, Nomination, Campaigning, Voting Day, Vote Counting, Results.\n\nRespond using this exact format with headings:\nDirect Answer: <short and clear>\nSimple Explanation: <easy to understand>\nStep-by-Step Breakdown: <use bullet points if applicable, otherwise say 'Not applicable'>\nNext Step Guidance: <suggest what the user can do next>\n\nBe friendly, simple, and informative. Avoid complex political or legal jargon. Use bullet points where helpful. Keep responses concise but structured.\n\nIf user asks about a specific step, explain that step and mention where it fits in the process. If user asks generally, show full election flow. Always encourage continuation: "Would you like to continue to the next step?"\n\nIf dates are mentioned, explain which phase is active and indicate whether it is COMPLETED, ACTIVE, or UPCOMING.\n\nDo not generate political opinions or bias. Stay neutral and educational.\n\nThis system is powered by Google Cloud Vertex AI (Gemini) and deployed on Google Cloud Run.`;
-
-const INTENT_ALIASES = {
-  registration: "registration",
-  nomination: "nomination",
-  campaigning: "campaigning",
-  voting_day: "voting",
-  voting: "voting",
-  vote_counting: "counting",
-  counting: "counting",
-  results: "results",
-  timeline: "timeline",
-  steps: "steps",
-  faq: "faq",
-  guide: "steps",
-};
 
 const normalizeIntentName = (name) =>
   name
@@ -359,22 +335,34 @@ const getChatResponse = async (message, language) => {
   return responseWithMetadata;
 };
 
-const getTranslatedChatResponse = async (message, language) => {
-  const response = await getChatResponse(message, language);
-  const translatedAnswer = await translateText(response.answer, language);
+/**
+ * Returns a translated chat response.
+ * @param {string} sanitizedMessage
+ * @param {string} sanitizedLanguage
+ * @returns {Promise<{intent: string, answer: string, sources: string[], language: string}>}
+ */
+const getTranslatedChatResponse = async (sanitizedMessage, sanitizedLanguage) => {
+  const response = await getChatResponse(sanitizedMessage, sanitizedLanguage);
+  const translatedAnswer = await translateText(response.answer, sanitizedLanguage);
   return {
     ...response,
     answer: translatedAnswer,
-    language,
+    language: sanitizedLanguage,
   };
 };
 
-const getTranslatedChatStream = async (message, language) => {
-  const response = await getChatResponseStream(message, language);
+/**
+ * Returns a translated chat stream.
+ * @param {string} sanitizedMessage
+ * @param {string} sanitizedLanguage
+ * @returns {Promise<{intent: string, sources: string[], stream: AsyncGenerator<string>, language: string}>}
+ */
+const getTranslatedChatStream = async (sanitizedMessage, sanitizedLanguage) => {
+  const response = await getChatResponseStream(sanitizedMessage, sanitizedLanguage);
 
   async function* iterate() {
     for await (const chunk of response.stream) {
-      const translated = await translateText(chunk, language);
+      const translated = await translateText(chunk, sanitizedLanguage);
       yield translated;
     }
   }
@@ -384,6 +372,7 @@ const getTranslatedChatStream = async (message, language) => {
     sources: response.sources,
     metadata: response.metadata,
     stream: iterate(),
+    language: sanitizedLanguage,
   };
 };
 

@@ -2,6 +2,10 @@ import { memo, useMemo, useState } from "react";
 
 const normalize = (value) => value.toLowerCase();
 
+/**
+ * Displays an accordion list of frequently asked questions with search capability.
+ * @param {{ faq: Array, loading: boolean }} props
+ */
 const FAQAccordion = ({ faq, loading }) => {
   const [query, setQuery] = useState("");
 

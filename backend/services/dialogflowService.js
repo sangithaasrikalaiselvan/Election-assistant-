@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Service for integrating with Dialogflow ES
+ */
+
 const dialogflow = require("@google-cloud/dialogflow");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
@@ -10,6 +14,10 @@ const {
   DIALOGFLOW_SESSION_ID,
 } = require("../config");
 
+/**
+ * Checks if Dialogflow configuration is present.
+ * @returns {boolean}
+ */
 const isDialogflowConfigured = () =>
   Boolean(DIALOGFLOW_PROJECT_ID && DIALOGFLOW_CLIENT_EMAIL && DIALOGFLOW_PRIVATE_KEY);
 

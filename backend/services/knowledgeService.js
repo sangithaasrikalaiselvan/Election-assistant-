@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Service for fetching local knowledge base data
+ */
+
 const fs = require("fs");
 const path = require("path");
 

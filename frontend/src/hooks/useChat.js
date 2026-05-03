@@ -45,8 +45,9 @@ export const useChat = (language) => {
         }
       });
     } catch (err) {
-      setMessages((prev) => prev.filter((message) => message.id !== assistantMessage.id));
-      setError("Unable to reach the assistant. Please try again.");
+      // eslint-disable-next-line no-console
+      console.error("Chat stream error:", err);
+      setError("Failed to get response. Please try again.");
     } finally {
       setLoading(false);
     }

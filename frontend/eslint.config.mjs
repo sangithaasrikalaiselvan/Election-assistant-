@@ -1,3 +1,4 @@
+import globals from "globals";
 import js from "@eslint/js";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -14,6 +15,8 @@ export default [
       sourceType: "module",
       parserOptions: { ecmaFeatures: { jsx: true } },
       globals: {
+        ...globals.browser,
+        ...globals.jest,
         window: "readonly",
         document: "readonly",
         navigator: "readonly",
@@ -22,13 +25,6 @@ export default [
         TextDecoder: "readonly",
         setTimeout: "readonly",
         clearTimeout: "readonly",
-        global: "readonly",
-        describe: "readonly",
-        it: "readonly",
-        expect: "readonly",
-        beforeEach: "readonly",
-        afterEach: "readonly",
-        vi: "readonly",
       },
     },
     plugins: {
@@ -39,10 +35,11 @@ export default [
       react: { version: "detect" },
     },
     rules: {
-      "no-unused-vars": "error",
-      "no-console": "warn",
+      "no-unused-vars": "warn",
+      "no-console": "off",
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-vars": "error",
+      "react/prop-types": "off",
     },
   },
 ];

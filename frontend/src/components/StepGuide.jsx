@@ -1,5 +1,9 @@
 import { memo, useMemo, useState } from "react";
 
+/**
+ * A component to display the election steps interactively.
+ * @param {{ steps: Array, loading: boolean }} props
+ */
 const StepGuide = ({ steps, loading }) => {
   const [index, setIndex] = useState(0);
   const currentStep = useMemo(() => steps[index], [steps, index]);

@@ -1,4 +1,4 @@
-const { errorHandler, notFound } = require("../utils/error");
+const { errorHandler, notFound } = require("../middlewares/errorHandler");
 
 const createRes = () => ({
   status: jest.fn().mockReturnThis(),

@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Service for translating text using Google Cloud Translation API
+ */
+
 const SimpleCache = require("../utils/cache");
 const { CACHE_TTL_MS, GOOGLE_TRANSLATE_ENDPOINT } = require("../config");
 const logger = require("../utils/logger");
@@ -34,20 +38,17 @@ const translateText = async (text, targetLanguage) => {
   }
 
   try {
-    const response = await fetch(
-      `${GOOGLE_TRANSLATE_ENDPOINT}?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          q: text,
-          target: normalizedLang,
-          format: "text",
-        }),
-      }
-    );
+    const response = await fetch(`${GOOGLE_TRANSLATE_ENDPOINT}?key=${apiKey}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        q: text,
+        target: normalizedLang,
+        format: "text",
+      }),
+    });
 
     if (!response.ok) {
       throw new Error(`Translate API error: ${response.status}`);

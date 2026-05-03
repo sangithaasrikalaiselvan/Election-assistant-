@@ -1,76 +1,88 @@
-const { validationResult } = require("express-validator");
+/**
+ * @fileoverview Controllers for chat endpoints
+ */
+
 const {
   getTranslatedChatResponse,
   getTranslatedChatStream,
 } = require("../services/chatService");
-const { recordLatency, recordError } = require("../utils/metrics");
+const { recordLatency } = require("../utils/metrics");
+const { success } = require("../utils/response");
 const { sanitizeInput } = require("../utils/sanitize");
-const { sendError, sendSuccess } = require("../utils/response");
+const asyncHandler = require("../utils/asyncHandler");
 
-const chatStreamController = async (req, res, next) => {
-  void next;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return sendError(res, 400, "Validation failed", { errors: errors.array() });
+/**
+ * Handles the chat request inputs.
+ * @param {string} message
+ * @param {string} language
+ * @returns {{sanitizedMessage: string, sanitizedLanguage: string}}
+ */
+const handleChatRequest = (message, language = "en") => {
+  const sanitizedMessage = sanitizeInput(message);
+  if (!sanitizedMessage) {
+    throw new Error("Message is required");
   }
-
-  const start = Date.now();
-  try {
-    const message = sanitizeInput(req.body.message);
-    if (!message) {
-      return sendError(res, 400, "Message is required");
-    }
-    const language = sanitizeInput(req.body.language || "en").toLowerCase();
-
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const { intent, sources, stream } = await getTranslatedChatStream(message, language);
-
-    for await (const chunk of stream) {
-      res.write(`data: ${JSON.stringify({ type: "chunk", content: chunk })}\n\n`);
-    }
-
-    res.write(`data: ${JSON.stringify({ type: "done", intent, sources, language })}\n\n`);
-    res.end();
-
-    const duration = Date.now() - start;
-    recordLatency(duration);
-  } catch (error) {
-    recordError();
-    if (!res.headersSent) {
-      res.setHeader("Content-Type", "application/json");
-      return res.status(500).json({
-        success: false,
-        message: error.message || "Stream failed",
-      });
-    }
-  }
+  const sanitizedLanguage = sanitizeInput(language).toLowerCase();
+  return { sanitizedMessage, sanitizedLanguage };
 };
 
-const chatController = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return sendError(res, 400, "Validation failed", { errors: errors.array() });
-  }
-
+/**
+ * Chat controller for streaming responses.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const chatStreamController = asyncHandler(async (req, res) => {
   const start = Date.now();
-  try {
-    const message = sanitizeInput(req.body.message);
-    if (!message) {
-      return sendError(res, 400, "Message is required");
-    }
-    const language = sanitizeInput(req.body.language || "en").toLowerCase();
-    const response = await getTranslatedChatResponse(message, language);
-    sendSuccess(res, response, "Chat response generated");
+  const { sanitizedMessage, sanitizedLanguage } = handleChatRequest(
+    req.body.message,
+    req.body.language
+  );
 
-    const duration = Date.now() - start;
-    recordLatency(duration);
-  } catch (error) {
-    recordError();
-    next(error);
+  const { intent, sources, stream } = await getTranslatedChatStream(
+    sanitizedMessage,
+    sanitizedLanguage
+  );
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  for await (const chunk of stream) {
+    res.write(`data: ${JSON.stringify({ type: "chunk", content: chunk })}\n\n`);
   }
-};
+
+  res.write(
+    `data: ${JSON.stringify({
+      type: "done",
+      intent,
+      sources,
+      language: sanitizedLanguage,
+    })}\n\n`
+  );
+  res.end();
+
+  const duration = Date.now() - start;
+  recordLatency(duration);
+});
+
+/**
+ * Chat controller for single responses.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const chatController = asyncHandler(async (req, res) => {
+  const start = Date.now();
+  const { sanitizedMessage, sanitizedLanguage } = handleChatRequest(
+    req.body.message,
+    req.body.language
+  );
+  
+  const response = await getTranslatedChatResponse(sanitizedMessage, sanitizedLanguage);
+  success(res, response, "Chat response generated");
+
+  const duration = Date.now() - start;
+  recordLatency(duration);
+});
 
 module.exports = { chatController, chatStreamController };
+

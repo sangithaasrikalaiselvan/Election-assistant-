@@ -13,8 +13,8 @@ const timeline = [
 
 describe("ElectionTimeline", () => {
   it("renders timeline phase with status", () => {
-    const originalDate = global.Date;
-    global.Date = class extends Date {
+    const originalDate = globalThis.Date;
+    globalThis.Date = class extends Date {
       constructor() {
         super("2026-02-05T00:00:00");
       }
@@ -24,6 +24,6 @@ describe("ElectionTimeline", () => {
     expect(screen.getByText(/voter registration/i)).toBeInTheDocument();
     expect(screen.getByText(/active/i)).toBeInTheDocument();
 
-    global.Date = originalDate;
+    globalThis.Date = originalDate;
   });
 });

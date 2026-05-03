@@ -7,6 +7,18 @@ const STATUS_STYLES = {
   UPCOMING: "status-upcoming",
 };
 
+/**
+ * A card component displaying a single phase of the election timeline.
+ * @param {{
+ *   title: string,
+ *   startDate: string,
+ *   endDate: string,
+ *   description: string,
+ *   status: string,
+ *   isActive: boolean,
+ *   onClick: () => void
+ * }} props
+ */
 const TimelineCard = ({
   title,
   startDate,

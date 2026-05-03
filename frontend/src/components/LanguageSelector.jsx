@@ -1,12 +1,10 @@
 import { memo } from "react";
+import { LANGUAGES } from "../utils/constants";
 
-const LANGUAGES = [
-  { code: "en", label: "English" },
-  { code: "hi", label: "Hindi" },
-  { code: "es", label: "Espanol" },
-  { code: "fr", label: "Francais" },
-];
-
+/**
+ * Renders a dropdown to select the preferred language.
+ * @param {{ language: string, onChange: (lang: string) => void }} props
+ */
 const LanguageSelector = ({ language, onChange }) => (
   <div className="language-selector">
     <label htmlFor="language" className="visually-hidden">

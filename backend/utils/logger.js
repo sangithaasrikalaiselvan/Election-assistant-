@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Structured logging utility using Winston
+ */
+
 const winston = require("winston");
 
 const isTest = process.env.NODE_ENV === "test" || Boolean(process.env.JEST_WORKER_ID);
@@ -12,6 +16,10 @@ if (!isTest && hasCloudCredentials) {
   transports.push(new LoggingWinston());
 }
 
+/**
+ * Configured Winston logger instance.
+ * @type {winston.Logger}
+ */
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.combine(winston.format.timestamp(), winston.format.json()),

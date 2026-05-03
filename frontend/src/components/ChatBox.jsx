@@ -1,6 +1,10 @@
 import { memo, useCallback } from "react";
 import { useChat } from "../hooks/useChat";
 
+/**
+ * A chat interface component powered by the election assistant API.
+ * @param {{ language: string }} props
+ */
 const ChatBox = ({ language }) => {
   const { messages, input, loading, error, setInput, sendMessageDebounced } =
     useChat(language);

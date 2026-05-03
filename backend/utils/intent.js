@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Utility for local keyword-based intent detection
+ */
+
 const INTENT_KEYWORDS = {
   faq: ["faq", "question", "help", "support"],
   registration: ["register", "registration", "enroll", "sign up"],
@@ -33,6 +37,11 @@ const keywordToRegex = (keyword) => {
   return new RegExp(`\\b${pattern}\\b`, "i");
 };
 
+/**
+ * Detects the intent of a text based on keyword matching.
+ * @param {string} text - The input text
+ * @returns {string} The detected intent or 'general'
+ */
 const detectIntent = (text) => {
   const normalized = String(text || "").toLowerCase();
   for (const intent of INTENT_PRIORITY) {

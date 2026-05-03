@@ -3,6 +3,10 @@ import TimelineCard from "./TimelineCard";
 import { electionTimeline } from "../data/timelineData";
 import { getTimelineStatus } from "../utils/timelineStatus";
 
+/**
+ * Displays the election timeline grid.
+ * @param {{ data?: Array }} props
+ */
 const ElectionTimeline = ({ data }) => {
   const [selectedPhase, setSelectedPhase] = useState(null);
   const today = useMemo(() => new Date(), []);

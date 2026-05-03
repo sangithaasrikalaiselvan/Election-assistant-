@@ -1,84 +1,25 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import LanguageSelector from "../components/LanguageSelector";
-import { fetchFaq, fetchGuide } from "../services/api";
+import { useElectionData } from "../hooks/useElectionData";
+import { UI_COPY, STORAGE_KEY } from "../utils/constants";
 
 const ChatBox = lazy(() => import("../components/ChatBox"));
 const StepGuide = lazy(() => import("../components/StepGuide"));
 const ElectionTimeline = lazy(() => import("../components/ElectionTimeline"));
 const FAQAccordion = lazy(() => import("../components/FAQAccordion"));
 
-const UI_COPY = {
-  en: {
-    heroTitle: "Election Assistant",
-    heroTagline: "Clear, step-by-step guidance for every phase of the election.",
-    chatTitle: "Interactive Assistant",
-    guideTitle: "Step-by-Step Guide",
-    timelineTitle: "Election Timeline",
-    faqTitle: "Frequently Asked Questions",
-  },
-  es: {
-    heroTitle: "Asistente Electoral",
-    heroTagline: "Guia clara y paso a paso para cada fase electoral.",
-    chatTitle: "Asistente Interactivo",
-    guideTitle: "Guia Paso a Paso",
-    timelineTitle: "Linea de Tiempo Electoral",
-    faqTitle: "Preguntas Frecuentes",
-  },
-  fr: {
-    heroTitle: "Assistant Electoral",
-    heroTagline: "Guide clair et progressif pour chaque phase electorale.",
-    chatTitle: "Assistant Interactif",
-    guideTitle: "Guide Etape par Etape",
-    timelineTitle: "Chronologie Electorale",
-    faqTitle: "Questions Frequentes",
-  },
-  hi: {
-    heroTitle: "Election Assistant",
-    heroTagline: "Har charan ke liye saral aur spasht margdarshan.",
-    chatTitle: "Interactive Assistant",
-    guideTitle: "Step-by-Step Guide",
-    timelineTitle: "Election Timeline",
-    faqTitle: "Frequently Asked Questions",
-  },
-};
-
-const STORAGE_KEY = "preferredLanguage";
-
+/**
+ * Main application dashboard rendering all election-related components.
+ */
 const HomePage = () => {
   const [language, setLanguage] = useState("en");
-  const [guideSteps, setGuideSteps] = useState([]);
-  const [faq, setFaq] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { guideSteps, faq, loading } = useElectionData();
 
   useEffect(() => {
     const storedLanguage = localStorage.getItem(STORAGE_KEY);
     if (storedLanguage) {
       setLanguage(storedLanguage);
     }
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadData = async () => {
-      try {
-        const [guideData, faqData] = await Promise.all([fetchGuide(), fetchFaq()]);
-
-        if (isMounted) {
-          setGuideSteps(guideData.steps || []);
-          setFaq(faqData.faq || []);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadData();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   useEffect(() => {
